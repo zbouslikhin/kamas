@@ -10,6 +10,3 @@ dependencies = [
     "uvicorn>=0.40.0",
     "kamas-trainer",
 ]
-
-[tool.uv.sources]
-kamas-trainer = { path = "../..", editable = true }

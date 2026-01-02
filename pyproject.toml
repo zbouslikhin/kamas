@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = ["kamas-dashboard", "kamas-trainer"]
 
-[tool.uv.workspaces]
+[tool.uv.workspace]
 members = ["libs/*", "apps/*"]
 
 [tool.uv.sources]
