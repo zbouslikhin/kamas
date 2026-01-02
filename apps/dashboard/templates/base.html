@@ -1,0 +1,17 @@
+<!-- api/templates/base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>kamasTrainer</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        body { font-family: sans-serif; padding: 2rem; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { padding: 0.5rem; border: 1px solid #ddd; }
+        th { background: #f4f4f4; }
+    </style>
+</head>
+<body>
+    {% block content %}{% endblock %}
+</body>
+</html>

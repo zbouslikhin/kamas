@@ -1,0 +1,19 @@
+[project]
+name = "kamas"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["kamas-dashboard", "kamas-trainer"]
+
+[tool.uv.workspaces]
+members = ["libs/*", "apps/*"]
+
+[tool.uv.sources]
+kamas-trainer = { workspace = true }
+kamas-dashboard = { workspace = true }
+
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"

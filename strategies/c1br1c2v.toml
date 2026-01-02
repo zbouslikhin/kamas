@@ -1,0 +1,52 @@
+name = "C1BR1C2V"
+
+[[nodes]]
+id = "ema_200"
+model = "ema"
+inputs = ["close"]
+args = [200]
+
+[[nodes]]
+id = "c1"
+model = "gt"
+inputs = ["close", "ema_200"]
+
+[[nodes]]
+id = "range"
+model = "sub"
+inputs = ["high", "low"]
+
+[[nodes]]
+id = "atr_14"
+model = "atr"
+inputs = ["high", "low", "close"]
+args = [14]
+
+[[nodes]]
+id = "r1"
+model = "gt"
+inputs = ["range", "atr_14"]
+
+[[nodes]]
+id = "vol_avg"
+model = "sma"
+inputs = ["tick_volume"]
+args = [30]
+
+[[nodes]]
+id = "vol_ratio"
+model = "div"
+inputs = ["tick_volume", "vol_avg"]
+
+[[nodes]]
+id = "volume_ok"
+model = "gt"
+inputs = ["vol_ratio", 1.2]
+
+[[nodes]]
+id = "entry"
+model = "and"
+inputs = ["c1", "r1"]
+
+[outputs]
+entry = "entry"

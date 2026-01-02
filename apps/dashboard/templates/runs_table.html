@@ -1,0 +1,24 @@
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Strategy</th>
+            <th>Symbol</th>
+            <th>Balance</th>
+            <th>Profit</th>
+            <th>Created</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for r in runs %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.strategy_name }}</td>
+            <td>{{ r.symbol }}</td>
+            <td>{{ "%.2f"|format(r.final_balance) }}</td>
+            <td>{{ "%.2f"|format(r.profit) }}</td>
+            <td>{{ r.created_at }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
