@@ -1,13 +1,14 @@
-from typing import Any, Dict, Callable
+from typing import Any, Callable, Dict
 
-from attr import asdict
 import numpy as np
+from attr import asdict
 
-from kamas_core.engine.schema import Strategy, GraphContext, Signal
 from kamas_core.critters.registry import MODEL_REGISTRY
+from kamas_core.engine.schema import GraphContext, Signal, Strategy
 
 NodeValue = np.ndarray | float | int | bool
 NodeContext = Dict[str, NodeValue]
+
 
 def resolve_input(
     inp: Any,
@@ -32,31 +33,23 @@ class Graph:
         self.registry = registry
         self.state: NodeContext = {}
 
-    
     def run(self, inputs: GraphContext) -> Dict[str, Any]:
         input_map = asdict(inputs)
         state: Dict[str, np.ndarray] = {}
 
         for node in self.strategy.nodes:
-            result = np.full(
-                len(next(iter(input_map.values()))),
-                Signal.NOT,
-                dtype=int,
+            # compute node output
+            resolved_inputs = [resolve_input(i, input_map, state) for i in node.inputs]
+
+            result = MODEL_REGISTRY[node.model](
+                *resolved_inputs, **getattr(node, "params", {})
             )
-            # input can be a number. Example:
-            # [[nodes]]
-            # id = "volume_ok"
-            # model = "gt"
-            # inputs = ["vol_ratio", 1.2]
-            resolved_inputs = [
-            input_map[i] if i in input_map else state[i]
-            for i in node.inputs
-        ]
 
+            # apply critters
             for rule in node.critters:
-                fn = self.registry[rule.critter]
-                mask = fn(*resolved_inputs, **rule.params)
-
+                fn = MODEL_REGISTRY[rule.op]
+                ref_value = resolve_input(rule.ref, input_map, state)
+                mask = fn(result, ref_value, **rule.params)
                 result[mask] = Signal[rule.assign]
 
             state[node.id] = result

@@ -1,8 +1,8 @@
-from typing import List, Any, Optional, Dict
 from enum import IntEnum
+from typing import Any, Dict, List
 
-import numpy as np
 import attr
+import numpy as np
 
 
 class Signal(IntEnum):
@@ -12,8 +12,10 @@ class Signal(IntEnum):
     POSITIVE = 2
     NEGATIVE = -2
 
+
 @attr.s(auto_attribs=True)
 class GraphContext:
+    price_open: np.ndarray
     price_close: np.ndarray
     price_high: np.ndarray
     price_low: np.ndarray
@@ -22,17 +24,19 @@ class GraphContext:
 
 @attr.s(auto_attribs=True)
 class CritterRule:
-    critter: str           # "gt", "lt", etc.
-    assign: Signal            # "LONG", "SHORT", "POSITIVE", ...
+    op: str  # "gt", "lt"...
+    ref: Any
+    assign: Signal  # "LONG", "SHORT", "POSITIVE", ...
     params: Dict[str, Any] = attr.Factory(dict)
 
 
 @attr.s(auto_attribs=True)
 class Node:
     id: str
+    model: str
+    critters: List[CritterRule]
     inputs: List[Any] = attr.Factory(list)
     params: Dict[str, Any] = attr.Factory(dict)
-    critters: List[CritterRule]
 
 
 @attr.s(auto_attribs=True, frozen=True)

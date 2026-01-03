@@ -9,6 +9,7 @@ dependencies = [
   "kamas-core",
   "kamas-trader",
   "kamas-trainer",
+  "yfinance>=1.0",
 ]
 
 [tool.uv.workspace]

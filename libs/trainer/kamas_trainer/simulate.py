@@ -1,6 +1,7 @@
-import datetime
+from typing import Dict, List, Tuple
+
 import numpy as np
-from typing import List, Dict, Tuple
+
 
 def simulate_trades(
     prices: np.ndarray,
@@ -32,3 +33,4 @@ def simulate_trades(
 
     profit = balance - initial_balance
     return balance, profit, trades
+

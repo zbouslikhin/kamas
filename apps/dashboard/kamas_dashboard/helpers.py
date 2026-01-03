@@ -1,8 +1,8 @@
-from kamas_core.engine.schema import Strategy
 import attr
-
+from kamas_core.engine.schema import Strategy
 
 INPUT_SOURCES = {"price_close", "price_high", "price_low", "tick_volume"}
+
 
 def strategy_to_mermaid(strategy: Strategy) -> str:
     """
@@ -10,22 +10,31 @@ def strategy_to_mermaid(strategy: Strategy) -> str:
     """
     lines: list[str] = ["graph TD"]
 
-    # --- Nodes ---
     for node in strategy.nodes:
-        param_lines = []
+        sections: list[str] = []
 
+        # Header
+        sections.append(f"<b>{node.id}</b> <i>({node.model})</i>")
+
+        # Inputs
+        if node.inputs:
+            inputs = ", ".join(map(str, node.inputs))
+            sections.append(f"📥 <b>inputs</b>: {inputs}")
+
+        # Params
         if node.params:
-            for k, v in node.params.items():
-                param_lines.append(f"{k}={v}")
+            params = ", ".join(f"{k}={v}" for k, v in node.params.items())
+            sections.append(f"⚙️ <b>params</b>: {params}")
 
-        label_parts = [
-            node.id,
-            f"critter: {node.critter}",
-            *param_lines,
-        ]
+        # Critters
+        if node.critters:
+            sections.append("🧪 <b>critters</b>:")
+            for c in node.critters:
+                sections.append(
+                    f"&nbsp;&nbsp;• {c.op}({node.id}, {c.ref}) → <b>{c.assign.name}</b>"
+                )
 
-        label = "<br/>".join(label_parts)
-
+        label = "<br/>".join(sections)
         lines.append(f'{node.id}["{label}"]')
 
     # --- Edges ---
@@ -34,8 +43,13 @@ def strategy_to_mermaid(strategy: Strategy) -> str:
             if isinstance(inp, str) and inp not in INPUT_SOURCES:
                 lines.append(f"{inp} --> {node.id}")
 
-    # --- Outputs (buy / sell) ---
+        for critter in node.critters:
+            if isinstance(critter.ref, str) and critter.ref not in INPUT_SOURCES:
+                lines.append(f"{critter.ref} -.-> {node.id}")
+
+    # --- Outputs ---
     for output_name, node_id in attr.asdict(strategy.output_keys).items():
         lines.append(f"{node_id} --> {output_name}(({output_name.upper()}))")
 
     return "\n".join(lines)
+

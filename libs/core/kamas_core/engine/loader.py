@@ -1,14 +1,13 @@
-from pathlib import Path
 import tomllib
+from pathlib import Path
 
 from kamas_core.engine.schema import (
+    CritterRule,
+    Node,
+    Signal,
     Strategy,
     StrategyOutputKeys,
-    Node,
-    CritterRule,
 )
-from kamas_core.engine.schema import Signal
-
 
 MONOREPO_ROOT = Path(__file__).parents[4]
 STRATEGIES_DIR = MONOREPO_ROOT / "strategies"
@@ -17,6 +16,7 @@ STRATEGIES_DIR = MONOREPO_ROOT / "strategies"
 # ----------------------------
 # file loading
 # ----------------------------
+
 
 def load_strategy_file(name: str) -> dict:
     path = STRATEGIES_DIR / f"{name}.toml"
@@ -31,6 +31,7 @@ def load_strategy_file(name: str) -> dict:
 # parsing helpers
 # ----------------------------
 
+
 def parse_outputs(data: dict) -> StrategyOutputKeys:
     return StrategyOutputKeys(
         buy=data["outputs"]["buy"],
@@ -38,31 +39,27 @@ def parse_outputs(data: dict) -> StrategyOutputKeys:
 
 
 def parse_critter_rule(rule: dict) -> CritterRule:
-    try:
-        assign = Signal[rule["assign"]]
-    except KeyError:
-        raise ValueError(f"Invalid Signal '{rule['assign']}'")
+    assign = rule.get("assign")
+    if assign not in Signal.__dict__:
+        raise ValueError(f"Invalid Signal '{assign}'")
 
     return CritterRule(
-        critter=rule["critter"],
+        op=rule["op"],  # operation name
+        ref=rule["ref"],  # constant, input, or node reference
         assign=assign,
         params=rule.get("params", {}),
     )
 
 
 def parse_node(node_data: dict) -> Node:
-    critters = [
-        parse_critter_rule(rule)
-        for rule in node_data.get("critters", [])
-    ]
-
-    if not critters:
-        raise ValueError(f"Node '{node_data['id']}' has no critters")
+    critters = [parse_critter_rule(rule) for rule in node_data.get("critters", [])]
 
     return Node(
         id=node_data["id"],
+        model=node_data["model"],
         inputs=node_data.get("inputs", []),
         critters=critters,
+        params=node_data.get("params", {}),
     )
 
 

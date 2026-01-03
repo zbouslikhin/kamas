@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "kamas-dashboard"
 version = "0.1.0"
@@ -9,6 +13,8 @@ dependencies = [
     "sqlmodel>=0.0.31",
     "uvicorn>=0.40.0",
     "kamas-core",
+    "kamas-trainer",
+    "kamas-trader",
     "jinja2>=3.1.6",
     "pydantic>=2.12.5",
 ]

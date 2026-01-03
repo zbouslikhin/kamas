@@ -6,60 +6,80 @@ buy = "buy_signal"
 
 [[nodes]]
 id = "ema_200"
-critter = "ema"
+model = "ema"
 inputs = ["price_close"]
-[nodes.params]
-span = 200
+params = { span = 200 }
+critters = [
+    { op = "gt", ref = "price_close", assign = "LONG" },
+    { op = "lt", ref = "price_close", assign = "SHORT" }
+]
+
 
 [[nodes]]
 id = "c1"
-critter = "gt"
+model = "gt"
 inputs = ["price_close", "ema_200"]
 
-[[nodes]]
-id = "range"
-critter = "sub"
-inputs = ["price_high", "price_low"]
 
-[[nodes]]
-id = "atr_14"
-critter = "atr"
-inputs = ["price_high", "price_low", "price_close"]
-[nodes.params]
-window = 14
-
-[[nodes]]
-id = "r1"
-inputs = ["range", "atr_14"]
-[[nodes.critter]]
-critter = "gt"
-assign = "LONG"
-[[nodes.critter]]
-critter = "lt"
-assign = "SHORT"
-
-[[nodes]]
-id = "vol_avg"
-critter = "sma"
-inputs = ["tick_volume"]
-[nodes.params]
-window = 60
-
-[[nodes]]
-id = "vol_ratio"
-critter = "div"
-inputs = ["tick_volume", "vol_avg"]
-
-[[nodes]]
-id = "volume_ok"
-critter = "gt"
-inputs = ["vol_ratio", 1.2]
+# [[nodes]]
+# id = "range"
+# inputs = ["price_high", "price_low"]
+# [[nodes.critter]]
+# critter = "sub"
+# assign = "LONG"
+#
+#
+# [[nodes]]
+# id = "atr_14"
+# inputs = ["price_high", "price_low", "price_close"]
+# [nodes.params]
+# window = 14
+# [[nodes.critter]]
+# critter = "atr"
+# assign = "LONG"
+#
+#
+# [[nodes]]
+# id = "r1"
+# inputs = ["range", "atr_14"]
+# [[nodes.critter]]
+# critter = "gt"
+# assign = "LONG"
+# [[nodes.critter]]
+# critter = "lt"
+# assign = "SHORT"
+#
+#
+# [[nodes]]
+# id = "vol_avg"
+# inputs = ["tick_volume"]
+# [nodes.params]
+# window = 60
+# [[nodes.critter]]
+# critter = "sma"
+# assign = "SHORT"
+#
+#
+# [[nodes]]
+# id = "vol_ratio"
+# inputs = ["tick_volume", "vol_avg"]
+# [[nodes.critter]]
+# critter = "div"
+# assign = "SHORT"
+#
+#
+# [[nodes]]
+# id = "volume_ok"
+# inputs = ["vol_ratio", 1.2]
+# [[nodes.critter]]
+# critter = "gt"
+# assign = "SHORT"
 
 
 [[nodes]]
 id = "buy_signal"
-critter = "and"
-inputs = ["c1", "r1", "volume_ok"]
-[nodes.params]
-weights = [1.0, 1.5, 2.0]
-threshold = 50.0
+model = "and"
+inputs = ["c1", "ema_200"]
+# [nodes.params]
+# weights = [1.0, 1.5, 2.0]
+# threshold = 50.0

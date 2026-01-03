@@ -1,10 +1,9 @@
-from datetime import datetime
-from typing import Tuple, List, Dict, Any
+from datetime import datetime, timedelta
 
-import numpy as np
+from kamas_core.api import run_strategy
+from kamas_trader.trader import TradeOrchestrator
 
 from kamas_trainer.simulate import simulate_trades
-from kamas_core.api import run_strategy
 
 
 def draft_backtest(
@@ -37,23 +36,19 @@ def draft_backtest(
 class SimpleBacktester:
     def __init__(
         self,
-        close: np.ndarray,
-        buy_signal: np.ndarray,
-        sell_signal: np.ndarray,
+        orchestrator: TradeOrchestrator,
         initial_balance: float = 1000.0,
         commission: float = 0.0,
     ) -> None:
-        self.close = close
-        self.buy = buy_signal.astype(bool)
-        self.sell = sell_signal.astype(bool)
+        self.orchestrator = orchestrator
         self.initial_balance = initial_balance
         self.commission = commission
 
-    def run(self) -> Tuple[float, float, List[Dict[str, float]]]:
-        return simulate_trades(
-            prices=self.close,
-            buy=self.buy,
-            sell=self.sell,
-            initial_balance=self.initial_balance,
-            commission=self.commission,
-        )
+    def start(self, end_date: datetime):
+        current = self.orchestrator.start_date
+        while current <= end_date:
+            print(f"Current {current}")
+            print(f"end {end_date}")
+            self.orchestrator._run_for_date(current)
+            current += timedelta(days=1)
+
