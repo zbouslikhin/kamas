@@ -1,0 +1,15 @@
+{
+  "python.languageServer": "None",
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/*.pyo": true,
+    "**/*.egg-info": true
+  },
+  "search.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/*.pyo": true,
+    "**/*.egg-info": true
+  }
+}

@@ -1,52 +1,65 @@
 name = "C1BR1C2V"
 
+[outputs]
+buy = "buy_signal"
+
+
 [[nodes]]
 id = "ema_200"
-model = "ema"
-inputs = ["close"]
-args = [200]
+critter = "ema"
+inputs = ["price_close"]
+[nodes.params]
+span = 200
 
 [[nodes]]
 id = "c1"
-model = "gt"
-inputs = ["close", "ema_200"]
+critter = "gt"
+inputs = ["price_close", "ema_200"]
 
 [[nodes]]
 id = "range"
-model = "sub"
-inputs = ["high", "low"]
+critter = "sub"
+inputs = ["price_high", "price_low"]
 
 [[nodes]]
 id = "atr_14"
-model = "atr"
-inputs = ["high", "low", "close"]
-args = [14]
+critter = "atr"
+inputs = ["price_high", "price_low", "price_close"]
+[nodes.params]
+window = 14
 
 [[nodes]]
 id = "r1"
-model = "gt"
 inputs = ["range", "atr_14"]
+[[nodes.critter]]
+critter = "gt"
+assign = "LONG"
+[[nodes.critter]]
+critter = "lt"
+assign = "SHORT"
 
 [[nodes]]
 id = "vol_avg"
-model = "sma"
+critter = "sma"
 inputs = ["tick_volume"]
-args = [30]
+[nodes.params]
+window = 60
 
 [[nodes]]
 id = "vol_ratio"
-model = "div"
+critter = "div"
 inputs = ["tick_volume", "vol_avg"]
 
 [[nodes]]
 id = "volume_ok"
-model = "gt"
+critter = "gt"
 inputs = ["vol_ratio", 1.2]
 
-[[nodes]]
-id = "entry"
-model = "and"
-inputs = ["c1", "r1"]
 
-[outputs]
-entry = "entry"
+[[nodes]]
+id = "buy_signal"
+critter = "and"
+inputs = ["c1", "r1", "volume_ok"]
+[nodes.params]
+weights = [1.0, 1.5, 2.0]
+threshold = 50.0

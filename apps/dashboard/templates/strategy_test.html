@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ strategy_name }}</h1>
+
+<p>
+    <strong>Symbol:</strong> {{ symbol }}
+</p>
+
+<h2>Summary</h2>
+
+<table>
+    <tbody>
+        <tr>
+            <th align="left">Start</th>
+            <td>{{ summary.start.strftime("%Y-%m-%d") }}</td>
+        </tr>
+        <tr>
+            <th align="left">End</th>
+            <td>{{ summary.end.strftime("%Y-%m-%d") }}</td>
+        </tr>
+        <tr>
+            <th align="left">Initial balance</th>
+            <td>{{ "%.2f"|format(summary.initial_balance) }}</td>
+        </tr>
+        <tr>
+            <th align="left">Final balance</th>
+            <td>{{ "%.2f"|format(summary.final_balance) }}</td>
+        </tr>
+        <tr>
+            <th align="left">Profit</th>
+            <td>
+                {% if summary.profit >= 0 %}
+                    <span style="color: green;">{{ "%.2f"|format(summary.profit) }}</span>
+                {% else %}
+                    <span style="color: red;">{{ "%.2f"|format(summary.profit) }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th align="left">Trades</th>
+            <td>{{ summary.trades_count }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Trades</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Type</th>
+            <th>Index</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for t in trades %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ t.type }}</td>
+            <td>{{ t.index }}</td>
+            <td>{{ "%.5f"|format(t.price) }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

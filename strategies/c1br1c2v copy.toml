@@ -1,0 +1,41 @@
+name = "C1BR1C2V"
+
+[outputs]
+buy = "buy_signal"
+
+[[risk_management]]
+risk = "atr"
+pyramid_on = 50
+parallel_same_trade = 2
+atr_sl_factor = 1.5
+
+
+[[nodes]]
+id = "c1"
+critter = ""
+inputs = ["", ""]
+
+[[nodes]]
+id = "baseline"
+critter = ""
+inputs = ["", ""]
+
+[[nodes]]
+id = "r1"
+critter = "gt"
+inputs = ["range", "atr_14"]
+
+[[nodes]]
+id = "c2"
+critter = ""
+inputs = ["", ""]
+
+[[nodes]]
+id = "volume"
+critter = ""
+inputs = ["", ""]
+
+[[nodes]]
+id = "buy_signal"
+critter = "and"
+inputs = ["c1", "baseline", "r1", "c2", "volume"]

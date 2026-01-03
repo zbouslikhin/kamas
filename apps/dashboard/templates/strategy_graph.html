@@ -1,0 +1,22 @@
+<!-- api/templates/strategy_graph.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Node Graph: {{ strategy_name }}</h1>
+
+<!-- Mermaid container -->
+<div class="mermaid">
+{{ mermaid_code }}
+</div>
+
+<!-- Mermaid JS -->
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+mermaid.initialize({ startOnLoad: true });
+</script>
+
+<button href="/strategy/{{ strategy_name }}/test">
+    ▶ Test strategy (quick)
+</button>
+
+{% endblock %}
