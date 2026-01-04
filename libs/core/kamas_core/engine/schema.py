@@ -24,6 +24,7 @@ class GraphContext:
 
 @attr.s(auto_attribs=True)
 class CritterRule:
+    id: str
     op: str  # "gt", "lt"...
     ref: Any
     assign: Signal  # "LONG", "SHORT", "POSITIVE", ...

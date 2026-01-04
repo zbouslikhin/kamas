@@ -31,7 +31,7 @@ def strategy_to_mermaid(strategy: Strategy) -> str:
             sections.append("🧪 <b>critters</b>:")
             for c in node.critters:
                 sections.append(
-                    f"&nbsp;&nbsp;• {c.op}({node.id}, {c.ref}) → <b>{c.assign.name}</b>"
+                    f"&nbsp;&nbsp;• {c.op}({node.id}, {c.ref}) → <b>{c.assign}</b>"
                 )
 
         label = "<br/>".join(sections)

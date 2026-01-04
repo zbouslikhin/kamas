@@ -5,20 +5,21 @@ buy = "buy_signal"
 
 
 [[nodes]]
-id = "ema_200"
+id = "ema_20"
 model = "ema"
 inputs = ["price_close"]
-params = { span = 200 }
+params = { span = 20 }
 critters = [
-    { op = "gt", ref = "price_close", assign = "LONG" },
-    { op = "lt", ref = "price_close", assign = "SHORT" }
+    { id = "price_above_ema", op = "lt", ref = "price_open", assign = "LONG" },
+    { id = "price_below_ema", op = "gt", ref = "price_open", assign = "SHORT" },
+    { id = "price_equal_ema", op = "eq", ref = "price_open", assign = "POSITIVE" }
 ]
 
 
 [[nodes]]
 id = "c1"
 model = "gt"
-inputs = ["price_close", "ema_200"]
+inputs = ["price_close", "ema_20"]
 
 
 # [[nodes]]
@@ -31,7 +32,10 @@ inputs = ["price_close", "ema_200"]
 #
 # [[nodes]]
 # id = "atr_14"
+# model = "atr"
 # inputs = ["price_high", "price_low", "price_close"]
+# params = { window = 4 }
+
 # [nodes.params]
 # window = 14
 # [[nodes.critter]]
@@ -78,8 +82,8 @@ inputs = ["price_close", "ema_200"]
 
 [[nodes]]
 id = "buy_signal"
-model = "and"
-inputs = ["c1", "ema_200"]
+model = "or"
+inputs = ["c1", "ema_20"]
 # [nodes.params]
 # weights = [1.0, 1.5, 2.0]
 # threshold = 50.0

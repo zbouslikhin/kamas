@@ -1,3 +1,4 @@
+import logging
 from typing import Any, Callable, Dict
 
 import numpy as np
@@ -41,18 +42,41 @@ class Graph:
             # compute node output
             resolved_inputs = [resolve_input(i, input_map, state) for i in node.inputs]
 
-            result = MODEL_REGISTRY[node.model](
+            indicator = MODEL_REGISTRY[node.model](
                 *resolved_inputs, **getattr(node, "params", {})
             )
+
+            if not node.critters:
+                state[node.id] = indicator
+                continue
 
             # apply critters
             for rule in node.critters:
                 fn = MODEL_REGISTRY[rule.op]
                 ref_value = resolve_input(rule.ref, input_map, state)
-                mask = fn(result, ref_value, **rule.params)
-                result[mask] = Signal[rule.assign]
+                mask = fn(indicator, ref_value, **rule.params)
 
-            state[node.id] = result
+                signals = np.full(indicator.shape, Signal.NOT, dtype=np.int8)
+                # rule-specific signals (no combination)
+                rule_signals = np.full(indicator.shape, Signal.NOT, dtype=np.int8)
+                rule_signals[mask] = Signal[rule.assign]
+
+                # detect overwrite in combined signals
+                overwrite_mask = mask & (signals != Signal.NOT)
+                if np.any(overwrite_mask):
+                    logging.warning(
+                        "Signal overwrite in node '%s', rule '%s': %d bars overwritten",
+                        node.id,
+                        rule.id,
+                        int(np.count_nonzero(overwrite_mask)),
+                    )
+
+                # apply to combined signals
+                signals[mask] = Signal[rule.assign]
+                # store per-rule signals instead of mask
+                state[f"{node.id}.{rule.id}"] = rule_signals
+
+            state[node.id] = signals
 
         return state
 

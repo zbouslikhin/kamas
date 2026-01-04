@@ -1,10 +1,10 @@
 import attr
-import datetime
+import datetime as dt
 
 
 @attr.s(auto_attribs=True, frozen=True)
 class TradeEvent:
-    type: str               # "entry" | "exit"
+    type: str  # "entry" | "exit"
     index: int
-    time: datetime.datetime
+    time: dt.datetime
     price: float

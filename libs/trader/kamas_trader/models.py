@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import attr
 
@@ -6,10 +6,10 @@ import attr
 @attr.s(auto_attribs=True)
 class Trade:
     entry_price: float
-    entry_time: datetime.datetime
+    entry_time: dt.datetime
 
     exit_price: float | None = None
-    exit_time: datetime.datetime | None = None
+    exit_time: dt.datetime | None = None
 
     @property
     def is_open(self) -> bool:
@@ -20,4 +20,3 @@ class Trade:
         if self.exit_price is not None:
             return self.exit_price - self.entry_price
         return None
-

@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from kamas_core.api import run_strategy
-from kamas_trader.trader import TradeOrchestrator
+from kamas_trader.orchestrator import TradeOrchestrator
 
 from kamas_trainer.simulate import simulate_trades
 
@@ -44,11 +44,21 @@ class SimpleBacktester:
         self.initial_balance = initial_balance
         self.commission = commission
 
-    def start(self, end_date: datetime):
-        current = self.orchestrator.start_date
-        while current <= end_date:
-            print(f"Current {current}")
-            print(f"end {end_date}")
-            self.orchestrator._run_for_date(current)
-            current += timedelta(days=1)
+    # def test_daily(self, start_date: datetime, end_date: datetime):
+    #     start_date = start_date.replace(hour=1, second=0, microsecond=0)
+    #     end_date = end_date.replace(hour=1, second=0, microsecond=0)
+    #     current = start_date.replace(hour=2, second=0, microsecond=0)
+    #     while current <= end_date:
 
+    #         self.orchestrator._run_for_date(start_date, current)
+    #         current += timedelta(days=1)
+    #         input()
+
+    def test_daily(self, start: datetime, end: datetime) -> None:
+        current = start
+        while current <= end:
+            print("------")
+            print(f"start date: {start}, today's date: {current}")
+            print(f"end {end}")
+            self.orchestrator._run_for_date(start, current)
+            current += timedelta(days=1)

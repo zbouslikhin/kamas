@@ -12,6 +12,10 @@ def lt(a: ArrayLike, b: ArrayLike) -> np.ndarray:
     return np.less(a, b)
 
 
+def eq(a: ArrayLike, b: ArrayLike) -> np.ndarray:
+    return np.equal(a, b)
+
+
 def and_(*args: ArrayLike) -> np.ndarray:
     """
     Logical AND over any number of boolean arrays or scalars.
@@ -24,16 +28,16 @@ def and_(*args: ArrayLike) -> np.ndarray:
     return result
 
 
-def or_(*args: ArrayLike) -> np.ndarray:
-    """
-    Logical OR over any number of boolean arrays or scalars.
-    """
+def or_(*args):
     if not args:
-        raise ValueError("or_ requires at least one argument")
-    result = np.asarray(args[0])
-    for arr in args[1:]:
-        result = np.logical_or(result, arr)
-    return result
+        raise ValueError("python_or requires at least one argument")
+
+    return np.array(
+        [
+            next(v for v in values if v) if any(values) else values[-1]
+            for values in zip(*args)
+        ]
+    )
 
 
 def sub(a: ArrayLike, b: ArrayLike) -> np.ndarray:

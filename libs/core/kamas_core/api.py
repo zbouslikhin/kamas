@@ -4,17 +4,19 @@ from typing import Dict
 import attr
 import numpy as np
 from numpy.typing import NDArray
+import pandas as pd
 
 from kamas_core.engine.graph import build_graph
 from kamas_core.engine.loader import load_strategy
 from kamas_core.engine.schema import GraphContext
-from kamas_core.helpers import get_rates
+from kamas_core.interactors.interact import get_rates
+from kamas_core.interactors.constants import Symbols
 
 
 @attr.s(auto_attribs=True, frozen=True)
 class StrategyRunResult:
-    symbol: str
-    time: NDArray[np.datetime64]
+    symbol: Symbols
+    time: NDArray[np.int32]
     price_open: np.ndarray
     price_close: np.ndarray
     price_high: np.ndarray
@@ -31,7 +33,7 @@ class StrategyRunResult:
 
 
 def run_strategy(
-    symbol: str, strategy_name: str, start: datetime, end: datetime
+    symbol: Symbols, strategy_name: str, start: datetime, end: datetime
 ) -> StrategyRunResult:
     """
     Runs a strategy graph on market data and returns computed buy/sell signals.
@@ -60,9 +62,11 @@ def run_strategy(
         # --- Run the strategy graph ---
         outputs = graph.run(ctx)
 
+        unix_time = (rates["time"] - pd.Timestamp("1970-01-01")) // pd.Timedelta("1s")
+
         return StrategyRunResult(
             symbol=symbol,
-            time=rates["time"].to_numpy(),
+            time=unix_time.to_numpy(),
             price_open=ctx.price_open,
             price_close=ctx.price_close,
             price_high=ctx.price_high,

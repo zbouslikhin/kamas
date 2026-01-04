@@ -9,7 +9,8 @@ dependencies = [
   "kamas-core",
   "kamas-trader",
   "kamas-trainer",
-  "yfinance>=1.0",
+  "ty>=0.0.8",
+  "black>=25.12.0",
 ]
 
 [tool.uv.workspace]
@@ -22,9 +23,25 @@ kamas-trainer = { workspace = true }
 kamas-dashboard = { workspace = true }
 
 [tool.ty.environment]
+root = [
+  "libs/core",
+  "libs/trader",
+  "libs/trainer",
+  "apps/dashboard"
+]
+python = "./.venv"
 extra-paths = [
   "libs/core",
   "libs/trader",
   "libs/trainer",
   "apps/dashboard"
+]
+
+[tool.black]
+line-length = 88
+
+[dependency-groups]
+dev = [
+    "notebook>=7.5.1",
+    "pytest>=9.0.2",
 ]

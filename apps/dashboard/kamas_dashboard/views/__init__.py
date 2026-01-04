@@ -1,4 +1,5 @@
-import datetime
+from kamas_core.time import today
+import datetime as dt
 from pathlib import Path
 
 import attr
@@ -7,7 +8,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from kamas_core.engine.loader import load_strategy
 from kamas_core.engine.schema import Strategy
-from kamas_trader.trader import TradeOrchestrator
+from kamas_trader.orchestrator import TradeOrchestrator
 from kamas_trainer.backtester import SimpleBacktester, draft_backtest
 from kamas_trainer.periods import STRESS_PERIODS
 from sqlmodel import Session, select
@@ -94,18 +95,16 @@ def show_graph(request: Request, strategy_file: str, templates=get_templates()):
 def test_strategy(
     request: Request,
     strategy_file: str,
-    # symbol: str = "EURUSD.pro",
-    symbol: str = "EURUSD=X",
+    symbol: str = "EURUSD",
     templates=get_templates(),
 ):
-    start = STRESS_PERIODS["COVID_CRASH"].start
-    start = datetime.datetime.now() - datetime.timedelta(days=90)
-    end = datetime.datetime.now()
+    start = today() - dt.timedelta(days=90)
+    end = today()
     initial_balance = 1000.0
 
-    orchestrator = TradeOrchestrator([symbol], strategy_file, start)
+    orchestrator = TradeOrchestrator([symbol], strategy_file)
     backtester = SimpleBacktester(orchestrator)
-    backtester.start(end)
+    backtester.start(start, end)
 
     result = draft_backtest(
         symbol=symbol,

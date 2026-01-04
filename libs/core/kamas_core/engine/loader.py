@@ -44,6 +44,7 @@ def parse_critter_rule(rule: dict) -> CritterRule:
         raise ValueError(f"Invalid Signal '{assign}'")
 
     return CritterRule(
+        id=rule["id"],
         op=rule["op"],  # operation name
         ref=rule["ref"],  # constant, input, or node reference
         assign=assign,
